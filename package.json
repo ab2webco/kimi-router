@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "build": "tsc",
-    "start": "node dist/server.js",
+    "build": "echo 'No build step needed - using ts-node directly'",
+    "start": "ts-node server.ts",
     "build-node": "tsc",
     "start-ts": "ts-node server.ts",
     "start-native": "ts-node server-native.ts"
@@ -15,9 +15,9 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "ts-node": "^10.9.1",
     "typescript": "^5.0.0"
-  }
+  },
+  "devDependencies": {}
 }
