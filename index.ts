@@ -66,6 +66,8 @@ export default {
           "Authorization": `Bearer ${bearerToken}`,
           "User-Agent": "Kimi-Router/1.0 (https://github.com/ab2webco/kimi-router)",
           "X-Forwarded-For": request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "unknown",
+          "HTTP-Referer": "https://claude.ab2web.dev",
+          "X-Title": "Kimi Router",
         },
         body: JSON.stringify(openaiRequest),
       });

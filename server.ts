@@ -65,6 +65,8 @@ app.post('/v1/messages', async (req, res) => {
         "Authorization": `Bearer ${bearerToken}`,
         "User-Agent": "Kimi-Router/1.0 (https://github.com/ab2webco/kimi-router)",
         "X-Forwarded-For": req.ip || req.connection.remoteAddress || 'unknown',
+        "HTTP-Referer": "https://kimi.koombea.io",
+        "X-Title": "Kimi Router",
       },
       body: JSON.stringify(openaiRequest),
     });
@@ -102,14 +104,21 @@ app.post('/v1/messages', async (req, res) => {
               break;
             }
             
-            if (!res.write(value)) {
+            // Ensure proper encoding for the chunk
+            const chunk = typeof value === 'string' ? value : new TextDecoder().decode(value);
+            
+            if (!res.write(chunk, 'utf8')) {
               // Handle backpressure
               await new Promise(resolve => res.once('drain', resolve));
             }
           }
         } catch (error) {
           console.error('Streaming error:', error);
-          res.end();
+          if (!res.headersSent) {
+            res.status(500).json({ error: 'Streaming failed' });
+          } else {
+            res.end();
+          }
         } finally {
           reader.releaseLock();
         }
