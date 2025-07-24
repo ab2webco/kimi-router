@@ -75,12 +75,13 @@ app.post('/v1/messages', async (req, res) => {
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Headers', 'Cache-Control');
       
-      const reader = openaiResponse.body?.getReader();
-      if (!reader) {
-        throw new Error('No response body');
-      }
-
+      // Use the streamOpenAIToAnthropic function instead of manual implementation
+      const anthropicStream = streamOpenAIToAnthropic(openaiResponse.body as ReadableStream, openaiRequest.model);
+      
+      const reader = anthropicStream.getReader();
       const decoder = new TextDecoder();
       
       try {
@@ -89,25 +90,7 @@ app.post('/v1/messages', async (req, res) => {
           if (done) break;
           
           const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split('\n').filter(line => line.trim());
-          
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
-              if (data === '[DONE]') {
-                res.write('data: [DONE]\n\n');
-                break;
-              }
-              
-              try {
-                const parsed = JSON.parse(data);
-                const transformed = formatOpenAIToAnthropic(parsed, openaiRequest.model);
-                res.write(`data: ${JSON.stringify(transformed)}\n\n`);
-              } catch (e) {
-                // Skip invalid JSON
-              }
-            }
-          }
+          res.write(chunk);
         }
       } finally {
         reader.releaseLock();

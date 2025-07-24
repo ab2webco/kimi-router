@@ -12,7 +12,15 @@ export default {
     const url = new URL(request.url);
     
     if (url.pathname === '/' && request.method === 'GET') {
-      const baseUrl = env.BASE_URL || url.origin;
+      // Use HTTPS for production domain, fallback to BASE_URL env var or localhost for dev
+      let baseUrl = env.BASE_URL;
+      if (!baseUrl) {
+        if (url.hostname === 'claude.ab2web.dev') {
+          baseUrl = 'https://claude.ab2web.dev';
+        } else {
+          baseUrl = url.origin;
+        }
+      }
       return new Response(generateIndexHtml(baseUrl), {
         headers: { "Content-Type": "text/html" }
       });
@@ -31,7 +39,15 @@ export default {
     }
     
     if (url.pathname === '/install.sh' && request.method === 'GET') {
-      const baseUrl = env.BASE_URL || url.origin;
+      // Use HTTPS for production domain, fallback to BASE_URL env var or localhost for dev
+      let baseUrl = env.BASE_URL;
+      if (!baseUrl) {
+        if (url.hostname === 'claude.ab2web.dev') {
+          baseUrl = 'https://claude.ab2web.dev';
+        } else {
+          baseUrl = url.origin;
+        }
+      }
       return new Response(generateInstallSh(baseUrl), {
         headers: { "Content-Type": "text/plain; charset=utf-8" }
       });

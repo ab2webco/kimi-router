@@ -96,7 +96,7 @@ export function generateIndexHtml(baseUrl: string): string {
         }
 
         .hero p {
-            font-size: 1.4em;
+            font-size: 1.2em;
             opacity: 0.95;
             max-width: 700px;
             margin: 0 auto;
