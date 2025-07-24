@@ -116,7 +116,8 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       try {
         anthropicRequest = JSON.parse(bodyText);
       } catch (parseError) {
-        console.error('JSON Parse Error:', parseError.message);
+        const error = parseError as Error;
+        console.error('JSON Parse Error:', error.message);
         console.error('Body length:', bodyText.length);
         console.error('Body preview (first 200 chars):', bodyText.substring(0, 200));
         console.error('Character at error position:', bodyText.charAt(128));
