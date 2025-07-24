@@ -83,7 +83,7 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
                 if (!delta) continue;
                 processStreamDelta(delta);
               } catch (e) {
-                // Parse error
+                // Parse error - ignore malformed chunks
                 continue;
               }
             }
@@ -150,6 +150,15 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
             }
           }
         } else if (delta.content) {
+          // Filter out reserved tokens and other special tokens that can cause streaming issues
+          const cleanContent = delta.content
+            .replace(/<\|reserved_token_\d+\|>/g, '')
+            .replace(/<\|.*?\|>/g, '') // Filter any other special tokens
+            .replace(/\u0000/g, ''); // Filter null bytes
+          
+          // Skip if content is empty after filtering
+          if (!cleanContent) return;
+          
           if (isToolUse) {
             enqueueSSE(controller, "content_block_stop", {
               type: "content_block_stop",
@@ -177,7 +186,7 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
             index: contentBlockIndex,
             delta: {
               type: "text_delta",
-              text: delta.content,
+              text: cleanContent,
             },
           });
         }

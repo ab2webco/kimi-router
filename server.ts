@@ -166,6 +166,9 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       }
       
       if (openaiRequest.stream) {
+        const requestId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        console.log(`🌊 Starting stream ${requestId} for model: ${openaiRequest.model}`);
+        
         // EXACT same logic as index.ts - create Web Response then stream
         const anthropicStream = streamOpenAIToAnthropic(openaiResponse.body as ReadableStream, openaiRequest.model);
         const webResponse = new Response(anthropicStream, {
@@ -208,6 +211,8 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
               if (!res.destroyed) {
                 res.end();
               }
+              
+              console.log(`🏁 Stream ${requestId} completed`);
             }
           };
           
