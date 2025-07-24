@@ -5,7 +5,7 @@ import { formatOpenAIToAnthropic } from './formatResponse';
 import { generateIndexHtml } from './generateIndexHtml';
 import { termsHtml } from './termsHtml';
 import { privacyHtml } from './privacyHtml';
-import { installSh } from './installSh';
+import { generateInstallSh } from './installSh';
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -31,7 +31,8 @@ export default {
     }
     
     if (url.pathname === '/install.sh' && request.method === 'GET') {
-      return new Response(installSh, {
+      const baseUrl = env.BASE_URL || url.origin;
+      return new Response(generateInstallSh(baseUrl), {
         headers: { "Content-Type": "text/plain; charset=utf-8" }
       });
     }

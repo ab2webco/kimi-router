@@ -1,4 +1,5 @@
-export const installSh = `#!/bin/bash
+export function generateInstallSh(baseUrl: string): string {
+    return `#!/bin/bash
 
 set -e
 
@@ -80,7 +81,7 @@ echo ""
 case "$provider_choice" in
     1)
         provider="openrouter"
-        default_base_url="https://kimi-router.your-domain.com"
+        default_base_url="${baseUrl}"
         api_key_url="https://openrouter.ai/settings/keys"
         default_model_main="moonshotai/kimi-k2"
         default_model_small="google/gemini-2.5-flash-lite"
@@ -264,3 +265,4 @@ echo "💡 Advanced: To set up multiple configurations, you can create additiona
 echo "   kimi-openrouter() { export ANTHROPIC_BASE_URL=...; claude \\"\\$@\\"; }"
 echo "   kimi-moonshot() { export ANTHROPIC_BASE_URL=...; claude \\"\\$@\\"; }"
 `;
+}

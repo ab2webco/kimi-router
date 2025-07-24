@@ -5,7 +5,7 @@ import { streamOpenAIToAnthropic } from './streamResponse';
 import { generateIndexHtml } from './generateIndexHtml';
 import { termsHtml } from './termsHtml';
 import { privacyHtml } from './privacyHtml';
-import { installSh } from './installSh';
+import { generateInstallSh } from './installSh';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -33,9 +33,19 @@ app.get('/privacy', (_req, res) => {
   res.send(privacyHtml);
 });
 
-app.get('/install.sh', (_req, res) => {
-  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-  res.send(installSh);
+app.get('/install.sh', (req, res) => {
+  try {
+    console.log('Install.sh endpoint accessed');
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const baseUrl = process.env.BASE_URL || `${protocol}://${host}`;
+    
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send(generateInstallSh(baseUrl));
+  } catch (error) {
+    console.error('Error serving install.sh:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 // Endpoint principal de la API
@@ -127,4 +137,6 @@ app.use((_req, res) => {
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
   console.log(`Use http://localhost:${port} as your ANTHROPIC_BASE_URL`);
+  console.log(`BASE_URL environment variable: ${process.env.BASE_URL || 'not set'}`);
+  console.log(`OPENROUTER_BASE_URL environment variable: ${process.env.OPENROUTER_BASE_URL || 'not set'}`);
 });
