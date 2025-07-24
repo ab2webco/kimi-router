@@ -44,7 +44,7 @@ Sign up at [openrouter.ai](https://openrouter.ai) to get your API key.
 
 #### 3. Configure Environment
 
-**Option A: Simple Environment Variables**
+**Option A: Simple Setup (Recommended)**
 
 Add to your `~/.bashrc` or `~/.zshrc`:
 
@@ -53,7 +53,7 @@ export ANTHROPIC_BASE_URL="https://kimi.koombea.io"
 export ANTHROPIC_API_KEY="your-openrouter-api-key"
 ```
 
-**Option B: Custom Function (Recommended)**
+**Option B: Custom Function with Alias**
 
 Add to your `~/.bashrc` or `~/.zshrc`:
 
@@ -61,9 +61,6 @@ Add to your `~/.bashrc` or `~/.zshrc`:
 kimi() {
   export ANTHROPIC_BASE_URL=https://kimi.koombea.io
   export ANTHROPIC_API_KEY=sk-or-v1-your-key-here
-  export ANTHROPIC_MODEL=moonshotai/kimi-k2
-  export ANTHROPIC_VISION_MODEL=anthropic/claude-3.5-sonnet
-  export ANTHROPIC_SMALL_FAST_MODEL=google/gemini-2.5-flash-lite
   claude "$@"
 }
 ```
@@ -173,9 +170,9 @@ kimi-router/
 
 Kimi Router automatically switches between models based on content type:
 
-- **Text conversations** → Uses `ANTHROPIC_MODEL` (economic choice like `moonshotai/kimi-k2`)
-- **Images detected** → Auto-switches to `ANTHROPIC_VISION_MODEL` (like `anthropic/claude-3.5-sonnet`)
-- **Fast tasks** → Uses `ANTHROPIC_SMALL_FAST_MODEL` for quick responses
+- **Text conversations** → Uses `moonshotai/kimi-k2` (fast & economic)
+- **Images detected** → Auto-switches to `anthropic/claude-3.5-sonnet` (vision capable)
+- **No configuration needed** → Works out of the box!
 
 ### Default Models
 
@@ -185,13 +182,11 @@ Kimi Router comes pre-configured with optimized model defaults:
 - **Vision Model**: `anthropic/claude-3.5-sonnet` - Automatically used when images are detected
 - **Fast Model**: `google/gemini-2.5-flash-lite` - Quick responses
 
-### Custom Model Configuration
+### Custom Vision Model (Optional)
 
 ```bash
-# Set your preferred models with smart selection
-export ANTHROPIC_MODEL="moonshotai/kimi-k2"                    # Economic for text
-export ANTHROPIC_VISION_MODEL="anthropic/claude-3.5-sonnet"  # Auto-used for images
-export ANTHROPIC_SMALL_FAST_MODEL="google/gemini-2.5-flash-lite"  # Fast tasks
+# Only if you want to override the default vision model
+export ANTHROPIC_VISION_MODEL="openai/gpt-4-vision-preview"  # Custom vision model
 
 # Or use with the kimi function
 kimi() {

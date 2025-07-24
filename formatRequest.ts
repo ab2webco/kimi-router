@@ -130,9 +130,11 @@ function autoSelectModel(originalModel: string, messages: any[], env?: any): str
   }
   
   // Get models from environment variables (for Node.js server)
-  const defaultModel = process.env.ANTHROPIC_MODEL || env?.ANTHROPIC_MODEL || 'moonshotai/kimi-k2';
+  // Default to kimi-k2 for text (economic) unless overridden
+  const defaultModel = 'moonshotai/kimi-k2';
+  // Allow override of vision model via env var, default to claude-3.5-sonnet
   const visionModel = process.env.ANTHROPIC_VISION_MODEL || env?.ANTHROPIC_VISION_MODEL || 'anthropic/claude-3.5-sonnet';
-  const fastModel = process.env.ANTHROPIC_SMALL_FAST_MODEL || env?.ANTHROPIC_SMALL_FAST_MODEL || defaultModel;
+  const fastModel = defaultModel; // For now, use same as default
   
   // Auto-switch based on content
   if (hasImageContent(messages)) {
@@ -152,12 +154,10 @@ export function formatAnthropicToOpenAI(body: MessageCreateParamsBase, env?: any
   
   // Log model selection for debugging
   const hasImages = hasImageContent(messages);
-  console.log(`📊 Model Selection Debug:
-    - Original model: ${model}
-    - Has images: ${hasImages}
-    - Default model (env): ${process.env.ANTHROPIC_MODEL || env?.ANTHROPIC_MODEL || 'not set'}
-    - Vision model (env): ${process.env.ANTHROPIC_VISION_MODEL || env?.ANTHROPIC_VISION_MODEL || 'not set'}
+  console.log(`📊 Model Selection:
+    - Content type: ${hasImages ? '🖼️  Has images' : '📝 Text only'}
     - Selected model: ${selectedModel}
+    - Vision override: ${process.env.ANTHROPIC_VISION_MODEL || env?.ANTHROPIC_VISION_MODEL || 'none (using default)'}
   `);
   
   if (selectedModel !== model) {

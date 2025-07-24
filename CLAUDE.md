@@ -19,40 +19,22 @@ wrangler secret put OPENROUTER_BASE_URL
 
 The router automatically selects the best model based on content type and environment variables.
 
-### Setup for Claude Code Users
+### How it works
 
-Add these variables to your `~/.zshrc` (or `~/.bashrc`):
+The router automatically:
+- **Uses `moonshotai/kimi-k2`** for text conversations (economic, fast)
+- **Switches to `anthropic/claude-3.5-sonnet`** when images are detected
+- **No configuration needed** - works out of the box!
+
+### Optional: Custom Vision Model
+
+If you want to use a different model for images, you can set:
 
 ```bash
-# Kimi Router Smart Model Selection
-export ANTHROPIC_MODEL=moonshotai/kimi-k2                    # Default for text-only (economic)
-export ANTHROPIC_VISION_MODEL=anthropic/claude-3.5-sonnet  # For images/vision tasks
-export ANTHROPIC_SMALL_FAST_MODEL=google/gemini-2.5-flash-lite  # For quick tasks
-
-# Your OpenRouter API key
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-
-# Set the proxy as your Claude Code endpoint
-export ANTHROPIC_BASE_URL=https://kimi.koombea.io
+# Optional: Override the vision model (default is claude-3.5-sonnet)
+export ANTHROPIC_VISION_MODEL=openai/gpt-4-vision-preview
 ```
 
-After adding these, reload your shell:
-```bash
-source ~/.zshrc
-```
-
-### How it works:
-
-The router will automatically:
-- **Use `ANTHROPIC_VISION_MODEL`** when images are detected in your messages
-- **Use `ANTHROPIC_MODEL`** for regular text conversations (saves money!)
-- **Respect explicit model paths** if you specify them (e.g., "google/gemini-pro")
-- **Log model switches** in the server console for debugging
-
-This way you get:
-- 💰 **Cost optimization**: Cheap Kimi-K2 for coding/text
-- 👁️ **Vision support**: Claude 3.5 Sonnet automatically for images
-- 🔄 **Seamless switching**: No manual configuration needed
 
 ## Architecture Overview
 
