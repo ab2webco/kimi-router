@@ -662,7 +662,25 @@ export function generateIndexHtml(baseUrl: string): string {
             <div class="feature-card">
                 <h3>🧠 Smart Model Selection</h3>
                 <p>Automatically switches between models based on content. Uses Kimi K2 for text (cheap!) and Claude 3.5 Sonnet for images - saving you money!</p>
-                <p style="margin-top: 15px; font-size: 0.95em; color: var(--gray);">📌 Default: moonshotai/kimi-k2 (text) → anthropic/claude-3.5-sonnet (images)</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dots">
+                            <div class="code-dot"></div>
+                            <div class="code-dot"></div>
+                            <div class="code-dot"></div>
+                        </div>
+                        <button class="copy-button" onclick="copyToClipboard(this)">
+                            <svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
+                            Copy
+                        </button>
+                    </div>
+                    <code><span class="comment"># Automatic selection (built-in defaults)</span>
+<span class="comment"># Text only → moonshotai/kimi-k2</span>
+<span class="comment"># Images detected → anthropic/claude-3.5-sonnet</span>
+
+<span class="comment"># Optional: Override vision model</span>
+<span class="keyword">export</span> <span class="function">ANTHROPIC_VISION_MODEL</span>=<span class="string">"openai/gpt-4-vision-preview"</span></code>
+                </div>
             </div>
 
             <div class="feature-card">
