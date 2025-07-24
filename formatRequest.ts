@@ -114,12 +114,16 @@ export function mapModel(anthropicModel: string): string {
   return anthropicModel;
 }
 
-// Function to detect if messages contain images
+// Function to detect if the CURRENT message contains images
 function hasImageContent(messages: any[]): boolean {
-  return messages.some(message => {
-    if (!Array.isArray(message.content)) return false;
-    return message.content.some((content: any) => content.type === 'image');
-  });
+  // Only check the last user message, not the entire conversation history
+  const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
+  
+  if (!lastUserMessage || !Array.isArray(lastUserMessage.content)) {
+    return false;
+  }
+  
+  return lastUserMessage.content.some((content: any) => content.type === 'image');
 }
 
 // Function to auto-select model based on content and environment variables
@@ -145,10 +149,12 @@ export function formatAnthropicToOpenAI(body: MessageCreateParamsBase, env?: any
   
   // Log model selection for debugging
   const hasImages = hasImageContent(messages);
+  const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
   console.log(`📊 Model Selection:
-    - Content type: ${hasImages ? '🖼️  Has images' : '📝 Text only'}
+    - Last message has images: ${hasImages ? '🖼️  YES' : '📝 NO'}
+    - Original model: ${model}
     - Selected model: ${selectedModel}
-    - Vision override: ${process.env.ANTHROPIC_VISION_MODEL || env?.ANTHROPIC_VISION_MODEL || 'none (using default)'}
+    - Action: ${selectedModel !== model ? '🔄 SWITCHED' : '✅ KEPT'}
   `);
   
   if (selectedModel !== model) {
