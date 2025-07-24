@@ -73,30 +73,46 @@ app.post('/v1/messages', async (req, res) => {
     }
 
     if (openaiRequest.stream) {
+      // Use EXACTLY the same logic as index.ts (Cloudflare Workers)
+      const anthropicStream = streamOpenAIToAnthropic(openaiResponse.body as ReadableStream, openaiRequest.model);
+      
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Headers', 'Cache-Control');
       
-      // Use the streamOpenAIToAnthropic function instead of manual implementation
-      const anthropicStream = streamOpenAIToAnthropic(openaiResponse.body as ReadableStream, openaiRequest.model);
-      
+      // Convert ReadableStream to Node.js stream for Express
       const reader = anthropicStream.getReader();
-      const decoder = new TextDecoder();
       
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          
-          const chunk = decoder.decode(value, { stream: true });
-          res.write(chunk);
+      const pump = async () => {
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+              res.end();
+              break;
+            }
+            
+            if (!res.write(value)) {
+              // Handle backpressure
+              await new Promise(resolve => res.once('drain', resolve));
+            }
+          }
+        } catch (error) {
+          console.error('Streaming error:', error);
+          res.end();
+        } finally {
+          reader.releaseLock();
         }
-      } finally {
+      };
+      
+      // Handle client disconnect
+      res.on('close', () => {
         reader.releaseLock();
-        res.end();
-      }
+      });
+      
+      pump();
     } else {
       const openaiData = await openaiResponse.json();
       const anthropicResponse = formatOpenAIToAnthropic(openaiData, openaiRequest.model);
