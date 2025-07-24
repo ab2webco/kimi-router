@@ -238,4 +238,7 @@ server.listen(port, () => {
   console.log(`Use http://localhost:${port} as your ANTHROPIC_BASE_URL`);
   console.log(`BASE_URL environment variable: ${process.env.BASE_URL || 'not set'}`);
   console.log(`OPENROUTER_BASE_URL environment variable: ${process.env.OPENROUTER_BASE_URL || 'not set'}`);
+  console.log(`ANTHROPIC_MODEL environment variable: ${process.env.ANTHROPIC_MODEL || 'not set'}`);
+  console.log(`ANTHROPIC_VISION_MODEL environment variable: ${process.env.ANTHROPIC_VISION_MODEL || 'not set'}`);
+  console.log(`ANTHROPIC_SMALL_FAST_MODEL environment variable: ${process.env.ANTHROPIC_SMALL_FAST_MODEL || 'not set'}`);
 });

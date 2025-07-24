@@ -151,8 +151,17 @@ export function formatAnthropicToOpenAI(body: MessageCreateParamsBase, env?: any
   const selectedModel = autoSelectModel(model, messages, env);
   
   // Log model selection for debugging
+  const hasImages = hasImageContent(messages);
+  console.log(`📊 Model Selection Debug:
+    - Original model: ${model}
+    - Has images: ${hasImages}
+    - Default model (env): ${process.env.ANTHROPIC_MODEL || env?.ANTHROPIC_MODEL || 'not set'}
+    - Vision model (env): ${process.env.ANTHROPIC_VISION_MODEL || env?.ANTHROPIC_VISION_MODEL || 'not set'}
+    - Selected model: ${selectedModel}
+  `);
+  
   if (selectedModel !== model) {
-    console.log(`🔄 Auto-switched model: ${model} → ${selectedModel} (${hasImageContent(messages) ? 'images detected' : 'text only'})`);
+    console.log(`🔄 Auto-switched model: ${model} → ${selectedModel} (${hasImages ? 'images detected' : 'text only'})`);
   }
 
   const openAIMessages = Array.isArray(messages)
