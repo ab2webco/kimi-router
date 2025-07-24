@@ -141,7 +141,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
         }
       }
       
-      const openaiRequest = formatAnthropicToOpenAI(anthropicRequest);
+      const openaiRequest = formatAnthropicToOpenAI(anthropicRequest, process.env);
       const bearerToken = req.headers['x-api-key'] as string;
       
       const baseUrl = process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';

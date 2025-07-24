@@ -1,9 +1,9 @@
-name = "ab2web-router"
+name = "kimi-router"
 main = "index.ts"
 compatibility_date = "2025-05-30"
 
 routes = [
-  { pattern = "claude.ab2web.dev", custom_domain = true }
+  { pattern = "kimi.koombea.io", custom_domain = true }
 ]
 
 # Enable logging

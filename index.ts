@@ -15,8 +15,8 @@ export default {
       // Use HTTPS for production domain, fallback to BASE_URL env var or localhost for dev
       let baseUrl = env.BASE_URL;
       if (!baseUrl) {
-        if (url.hostname === 'claude.ab2web.dev') {
-          baseUrl = 'https://claude.ab2web.dev';
+        if (url.hostname === 'kimi.koombea.io') {
+          baseUrl = 'https://kimi.koombea.io';
         } else {
           baseUrl = url.origin;
         }
@@ -42,8 +42,8 @@ export default {
       // Use HTTPS for production domain, fallback to BASE_URL env var or localhost for dev
       let baseUrl = env.BASE_URL;
       if (!baseUrl) {
-        if (url.hostname === 'claude.ab2web.dev') {
-          baseUrl = 'https://claude.ab2web.dev';
+        if (url.hostname === 'kimi.koombea.io') {
+          baseUrl = 'https://kimi.koombea.io';
         } else {
           baseUrl = url.origin;
         }
@@ -55,7 +55,7 @@ export default {
     
     if (url.pathname === '/v1/messages' && request.method === 'POST') {
       const anthropicRequest = await request.json() as any;
-      const openaiRequest = formatAnthropicToOpenAI(anthropicRequest);
+      const openaiRequest = formatAnthropicToOpenAI(anthropicRequest, env);
       const bearerToken = request.headers.get("x-api-key");
 
       const baseUrl = env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
@@ -66,7 +66,7 @@ export default {
           "Authorization": `Bearer ${bearerToken}`,
           "User-Agent": "Kimi-Router/1.0 (https://github.com/ab2webco/kimi-router)",
           "X-Forwarded-For": request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "unknown",
-          "HTTP-Referer": "https://claude.ab2web.dev",
+          "HTTP-Referer": "https://kimi.koombea.io",
           "X-Title": "Kimi Router",
         },
         body: JSON.stringify(openaiRequest),

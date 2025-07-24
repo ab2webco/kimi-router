@@ -83,8 +83,9 @@ case "$provider_choice" in
         provider="openrouter"
         default_base_url="${baseUrl}"
         api_key_url="https://openrouter.ai/settings/keys"
-        default_model_main="moonshotai/kimi-k2"
-        default_model_small="google/gemini-2.5-flash-lite"
+        default_model_main="moonshot/kimi-k2"
+        default_model_vision="anthropic/claude-3.5-sonnet"
+        default_model_small="google/gemini-2.0-flash-exp"
         ;;
     2)
         provider="moonshot"
@@ -121,6 +122,7 @@ case "$provider_choice" in
         echo ""
         
         default_model_main="kimi-k2-0711-preview"
+        default_model_vision="moonshot-v1-32k"
         default_model_small="moonshot-v1-8k"
         ;;
     *)
@@ -150,8 +152,11 @@ if [ -z "$api_key" ]; then
     exit 1
 fi
 
-read -p "Main model [$default_model_main]: " model_main
+read -p "Main model (text) [$default_model_main]: " model_main
 model_main=\${model_main:-$default_model_main}
+
+read -p "Vision model (images) [$default_model_vision]: " model_vision
+model_vision=\${model_vision:-$default_model_vision}
 
 read -p "Small/fast model [$default_model_small]: " model_small
 model_small=\${model_small:-$default_model_small}
@@ -185,7 +190,7 @@ fi
 # Remove existing Claude Code environment variables and kimi function
 if [ -f "$rc_file" ]; then
     # Use a temporary file to store content without Claude Code variables or kimi function
-    grep -v "^# Claude Code environment variables\\|^# Kimi Router function\\|^export ANTHROPIC_BASE_URL\\|^export ANTHROPIC_API_KEY\\|^export ANTHROPIC_MODEL\\|^export ANTHROPIC_SMALL_FAST_MODEL\\|^kimi() {\\|^  export ANTHROPIC_\\|^  claude\\|^}$" "$rc_file" > "\${rc_file}.tmp" || true
+    grep -v "^# Claude Code environment variables\\|^# Kimi Router function\\|^export ANTHROPIC_BASE_URL\\|^export ANTHROPIC_API_KEY\\|^export ANTHROPIC_MODEL\\|^export ANTHROPIC_VISION_MODEL\\|^export ANTHROPIC_SMALL_FAST_MODEL\\|^kimi() {\\|^  export ANTHROPIC_\\|^  claude\\|^}$" "$rc_file" > "\${rc_file}.tmp" || true
     mv "\${rc_file}.tmp" "$rc_file"
 fi
 
@@ -207,6 +212,7 @@ case "$config_choice" in
         echo "export ANTHROPIC_BASE_URL=$base_url" >> "$rc_file"
         echo "export ANTHROPIC_API_KEY=$api_key" >> "$rc_file"
         echo "export ANTHROPIC_MODEL=$model_main" >> "$rc_file"
+        echo "export ANTHROPIC_VISION_MODEL=$model_vision" >> "$rc_file"
         echo "export ANTHROPIC_SMALL_FAST_MODEL=$model_small" >> "$rc_file"
         echo "✅ Environment variables configured in $rc_file"
         
@@ -220,6 +226,7 @@ case "$config_choice" in
         echo "  export ANTHROPIC_BASE_URL=$base_url" >> "$rc_file"
         echo "  export ANTHROPIC_API_KEY=$api_key" >> "$rc_file"
         echo "  export ANTHROPIC_MODEL=$model_main" >> "$rc_file"
+        echo "  export ANTHROPIC_VISION_MODEL=$model_vision" >> "$rc_file"
         echo "  export ANTHROPIC_SMALL_FAST_MODEL=$model_small" >> "$rc_file"
         echo "  claude \\"\\$@\\"" >> "$rc_file"
         echo "}" >> "$rc_file"
@@ -236,6 +243,7 @@ case "$config_choice" in
         echo "  export ANTHROPIC_BASE_URL=$base_url" >> "$rc_file"
         echo "  export ANTHROPIC_API_KEY=$api_key" >> "$rc_file"
         echo "  export ANTHROPIC_MODEL=$model_main" >> "$rc_file"
+        echo "  export ANTHROPIC_VISION_MODEL=$model_vision" >> "$rc_file"
         echo "  export ANTHROPIC_SMALL_FAST_MODEL=$model_small" >> "$rc_file"
         echo "  claude \\"\\$@\\"" >> "$rc_file"
         echo "}" >> "$rc_file"

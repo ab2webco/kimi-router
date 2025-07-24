@@ -15,9 +15,48 @@ npm run deploy
 wrangler secret put OPENROUTER_BASE_URL
 ```
 
+## Smart Model Selection
+
+The router automatically selects the best model based on content type and environment variables.
+
+### Setup for Claude Code Users
+
+Add these variables to your `~/.zshrc` (or `~/.bashrc`):
+
+```bash
+# Kimi Router Smart Model Selection
+export ANTHROPIC_MODEL=moonshot/kimi-k2                    # Default for text-only (economic)
+export ANTHROPIC_VISION_MODEL=anthropic/claude-3.5-sonnet  # For images/vision tasks
+export ANTHROPIC_SMALL_FAST_MODEL=google/gemini-2.0-flash-exp  # For quick tasks
+
+# Your OpenRouter API key
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+
+# Set the proxy as your Claude Code endpoint
+export ANTHROPIC_BASE_URL=https://kimi.koombea.io
+```
+
+After adding these, reload your shell:
+```bash
+source ~/.zshrc
+```
+
+### How it works:
+
+The router will automatically:
+- **Use `ANTHROPIC_VISION_MODEL`** when images are detected in your messages
+- **Use `ANTHROPIC_MODEL`** for regular text conversations (saves money!)
+- **Respect explicit model paths** if you specify them (e.g., "google/gemini-pro")
+- **Log model switches** in the server console for debugging
+
+This way you get:
+- 💰 **Cost optimization**: Cheap Kimi-K2 for coding/text
+- 👁️ **Vision support**: Claude 3.5 Sonnet automatically for images
+- 🔄 **Seamless switching**: No manual configuration needed
+
 ## Architecture Overview
 
-y-router is a Cloudflare Worker that translates between Anthropic's Claude API format and OpenAI-compatible APIs. It enables Claude Code to work with OpenRouter and other OpenAI-compatible providers.
+Kimi Router is a Cloudflare Worker that translates between Anthropic's Claude API format and OpenAI-compatible APIs. It enables Claude Code to work with OpenRouter and other OpenAI-compatible providers.
 
 ### Core Translation Flow
 
@@ -50,7 +89,7 @@ This project has no formal test suite. When making changes:
 
 ### Important Notes
 
-- The worker name in `wrangler.toml` is `k-router` (not `y-router`)
-- Custom domain is configured as `your-kimi-router-domain.com`
+- The worker name in `wrangler.toml` is `k-router` (for Kimi Router)
+- Custom domain is configured as `kimi.koombea.io`
 - API keys are passed through headers, never stored
 - Supports any OpenAI-compatible endpoint via `OPENROUTER_BASE_URL`

@@ -114,8 +114,46 @@ export function mapModel(anthropicModel: string): string {
   return anthropicModel;
 }
 
-export function formatAnthropicToOpenAI(body: MessageCreateParamsBase): any {
+// Function to detect if messages contain images
+function hasImageContent(messages: any[]): boolean {
+  return messages.some(message => {
+    if (!Array.isArray(message.content)) return false;
+    return message.content.some((content: any) => content.type === 'image');
+  });
+}
+
+// Function to auto-select model based on content and environment variables
+function autoSelectModel(originalModel: string, messages: any[], env?: any): string {
+  // If user explicitly specified a full model path, respect it
+  if (originalModel.includes('/')) {
+    return originalModel;
+  }
+  
+  // Get models from environment variables (for Node.js server)
+  const defaultModel = process.env.ANTHROPIC_MODEL || env?.ANTHROPIC_MODEL || 'moonshot/kimi-k2';
+  const visionModel = process.env.ANTHROPIC_VISION_MODEL || env?.ANTHROPIC_VISION_MODEL || 'anthropic/claude-3.5-sonnet';
+  const fastModel = process.env.ANTHROPIC_SMALL_FAST_MODEL || env?.ANTHROPIC_SMALL_FAST_MODEL || defaultModel;
+  
+  // Auto-switch based on content
+  if (hasImageContent(messages)) {
+    // Use vision-capable model for images
+    return visionModel;
+  } else {
+    // Use default economic model for text-only
+    return defaultModel;
+  }
+}
+
+export function formatAnthropicToOpenAI(body: MessageCreateParamsBase, env?: any): any {
   const { model, messages, system = [], temperature, tools, stream } = body;
+  
+  // Auto-select the best model based on content
+  const selectedModel = autoSelectModel(model, messages, env);
+  
+  // Log model selection for debugging
+  if (selectedModel !== model) {
+    console.log(`🔄 Auto-switched model: ${model} → ${selectedModel} (${hasImageContent(messages) ? 'images detected' : 'text only'})`);
+  }
 
   const openAIMessages = Array.isArray(messages)
     ? messages.flatMap((anthropicMessage) => {
@@ -169,12 +207,27 @@ export function formatAnthropicToOpenAI(body: MessageCreateParamsBase): any {
         } else if (anthropicMessage.role === "user") {
           let userTextMessageContent = "";
           const subsequentToolMessages: any[] = [];
+          const contentParts: any[] = [];
 
           anthropicMessage.content.forEach((contentPart: any) => {
             if (contentPart.type === "text") {
               userTextMessageContent += (typeof contentPart.text === "string"
                 ? contentPart.text
                 : JSON.stringify(contentPart.text)) + "\n";
+              contentParts.push({
+                type: "text",
+                text: typeof contentPart.text === "string"
+                  ? contentPart.text
+                  : JSON.stringify(contentPart.text)
+              });
+            } else if (contentPart.type === "image") {
+              // Convert Anthropic image format to OpenAI format
+              contentParts.push({
+                type: "image_url",
+                image_url: {
+                  url: `data:${contentPart.source.media_type};base64,${contentPart.source.data}`
+                }
+              });
             } else if (contentPart.type === "tool_result") {
               subsequentToolMessages.push({
                 role: "tool",
@@ -186,12 +239,20 @@ export function formatAnthropicToOpenAI(body: MessageCreateParamsBase): any {
             }
           });
 
-          const trimmedUserText = userTextMessageContent.trim();
-          if (trimmedUserText.length > 0) {
+          // Use structured content if we have images, otherwise use simple text
+          if (contentParts.some(part => part.type === "image_url")) {
             openAiMessagesFromThisAnthropicMessage.push({
               role: "user",
-              content: trimmedUserText,
+              content: contentParts,
             });
+          } else {
+            const trimmedUserText = userTextMessageContent.trim();
+            if (trimmedUserText.length > 0) {
+              openAiMessagesFromThisAnthropicMessage.push({
+                role: "user",
+                content: trimmedUserText,
+              });
+            }
           }
           openAiMessagesFromThisAnthropicMessage.push(...subsequentToolMessages);
         }
@@ -223,7 +284,7 @@ export function formatAnthropicToOpenAI(body: MessageCreateParamsBase): any {
       }];
 
   const data: any = {
-    model: mapModel(model),
+    model: mapModel(selectedModel),
     messages: [...systemMessages, ...openAIMessages],
     temperature,
     stream,

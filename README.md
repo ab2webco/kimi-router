@@ -49,7 +49,7 @@ Sign up at [openrouter.ai](https://openrouter.ai) to get your API key.
 Add to your `~/.bashrc` or `~/.zshrc`:
 
 ```bash
-export ANTHROPIC_BASE_URL="https://your-kimi-router-domain.com"
+export ANTHROPIC_BASE_URL="https://kimi.koombea.io"
 export ANTHROPIC_API_KEY="your-openrouter-api-key"
 ```
 
@@ -59,10 +59,11 @@ Add to your `~/.bashrc` or `~/.zshrc`:
 
 ```bash
 kimi() {
-  export ANTHROPIC_BASE_URL=https://your-kimi-router-domain.com
+  export ANTHROPIC_BASE_URL=https://kimi.koombea.io
   export ANTHROPIC_API_KEY=sk-or-v1-your-key-here
-  export ANTHROPIC_MODEL=moonshotai/kimi-k2
-  export ANTHROPIC_SMALL_FAST_MODEL=google/gemini-2.5-flash-lite
+  export ANTHROPIC_MODEL=moonshot/kimi-k2
+  export ANTHROPIC_VISION_MODEL=anthropic/claude-3.5-sonnet
+  export ANTHROPIC_SMALL_FAST_MODEL=google/gemini-2.0-flash-exp
   claude "$@"
 }
 ```
@@ -166,21 +167,31 @@ kimi-router/
 └── package.json          # Dependencies and scripts
 ```
 
-## 🤖 Model Configuration
+## 🤖 Smart Model Configuration
+
+### 🧠 Automatic Model Selection
+
+Kimi Router automatically switches between models based on content type:
+
+- **Text conversations** → Uses `ANTHROPIC_MODEL` (economic choice like `moonshot/kimi-k2`)
+- **Images detected** → Auto-switches to `ANTHROPIC_VISION_MODEL` (like `anthropic/claude-3.5-sonnet`)
+- **Fast tasks** → Uses `ANTHROPIC_SMALL_FAST_MODEL` for quick responses
 
 ### Default Models
 
 Kimi Router comes pre-configured with optimized model defaults:
 
-- **Primary Model**: `moonshotai/kimi-k2` - Excellent for complex reasoning
-- **Fast Model**: `google/gemini-2.5-flash-lite` - Quick responses
+- **Primary Model**: `moonshot/kimi-k2` - Excellent for complex reasoning at low cost
+- **Vision Model**: `anthropic/claude-3.5-sonnet` - Automatically used when images are detected
+- **Fast Model**: `google/gemini-2.0-flash-exp` - Quick responses
 
 ### Custom Model Configuration
 
 ```bash
-# Set your preferred models
-export ANTHROPIC_MODEL="anthropic/claude-3.5-sonnet"
-export ANTHROPIC_SMALL_FAST_MODEL="anthropic/claude-3.5-haiku"
+# Set your preferred models with smart selection
+export ANTHROPIC_MODEL="moonshot/kimi-k2"                    # Economic for text
+export ANTHROPIC_VISION_MODEL="anthropic/claude-3.5-sonnet"  # Auto-used for images
+export ANTHROPIC_SMALL_FAST_MODEL="google/gemini-2.0-flash-exp"  # Fast tasks
 
 # Or use with the kimi function
 kimi() {
