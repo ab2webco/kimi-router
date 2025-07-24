@@ -30,9 +30,6 @@ RUN npm install --production
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy source TypeScript files (needed for runtime imports)
-COPY *.ts ./
-
 # Expose port
 EXPOSE 3000
 

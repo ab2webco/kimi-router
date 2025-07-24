@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "start": "node server.js",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "build-node": "tsc",
     "start-ts": "ts-node server.ts"
   },
