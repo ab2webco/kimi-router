@@ -191,15 +191,41 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
               while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
-                res.write(value);
+                
+                if (!res.destroyed) {
+                  res.write(value);
+                }
               }
+            } catch (error) {
+              console.error('Streaming error:', error);
             } finally {
-              res.end();
-              reader.releaseLock();
+              try {
+                reader.releaseLock();
+              } catch (e) {
+                console.error('Error releasing reader lock:', e);
+              }
+              
+              if (!res.destroyed) {
+                res.end();
+              }
             }
           };
           
-          pump();
+          // Handle client disconnect
+          req.on('close', () => {
+            try {
+              reader.releaseLock();
+            } catch (e) {
+              // Already released
+            }
+          });
+          
+          pump().catch(error => {
+            console.error('Pump error:', error);
+            if (!res.destroyed) {
+              res.end();
+            }
+          });
         } else {
           res.end();
         }

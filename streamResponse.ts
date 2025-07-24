@@ -53,7 +53,7 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
                       processStreamDelta(delta);
                     }
                   } catch (e) {
-                    // Parse error
+                    // Parse error - ignore malformed chunks
                   }
                 }
               }
@@ -89,8 +89,14 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
             }
           }
         }
+      } catch (streamError) {
+        console.error('Stream processing error:', streamError);
       } finally {
-        reader.releaseLock();
+        try {
+          reader.releaseLock();
+        } catch (e) {
+          // Reader might already be released
+        }
       }
 
       function processStreamDelta(delta: any) {
@@ -199,7 +205,12 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
         type: "message_stop",
       });
 
-      controller.close();
+      // Close the controller properly
+      try {
+        controller.close();
+      } catch (e) {
+        // Controller might already be closed
+      }
     },
   });
 }
