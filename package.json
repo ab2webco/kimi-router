@@ -1,0 +1,24 @@
+{
+  "name": "kimi-router",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "start": "node server.js",
+    "build-node": "tsc",
+    "start-ts": "ts-node server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  }
+}

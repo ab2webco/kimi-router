@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  kimi-router:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+    restart: unless-stopped

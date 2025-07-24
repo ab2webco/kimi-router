@@ -1,0 +1,12 @@
+name = "ab2web-router"
+main = "index.ts"
+compatibility_date = "2025-05-30"
+
+routes = [
+  { pattern = "claude.ab2web.dev", custom_domain = true }
+]
+
+# Enable logging
+[observability]
+enabled = true
+head_sampling_rate = 1
