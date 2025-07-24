@@ -83,9 +83,9 @@ case "$provider_choice" in
         provider="openrouter"
         default_base_url="${baseUrl}"
         api_key_url="https://openrouter.ai/settings/keys"
-        default_model_main="moonshot/kimi-k2"
+        default_model_main="moonshotai/kimi-k2"
         default_model_vision="anthropic/claude-3.5-sonnet"
-        default_model_small="google/gemini-2.0-flash-exp"
+        default_model_small="google/gemini-2.5-flash-lite"
         ;;
     2)
         provider="moonshot"

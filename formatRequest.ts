@@ -130,7 +130,7 @@ function autoSelectModel(originalModel: string, messages: any[], env?: any): str
   }
   
   // Get models from environment variables (for Node.js server)
-  const defaultModel = process.env.ANTHROPIC_MODEL || env?.ANTHROPIC_MODEL || 'moonshot/kimi-k2';
+  const defaultModel = process.env.ANTHROPIC_MODEL || env?.ANTHROPIC_MODEL || 'moonshotai/kimi-k2';
   const visionModel = process.env.ANTHROPIC_VISION_MODEL || env?.ANTHROPIC_VISION_MODEL || 'anthropic/claude-3.5-sonnet';
   const fastModel = process.env.ANTHROPIC_SMALL_FAST_MODEL || env?.ANTHROPIC_SMALL_FAST_MODEL || defaultModel;
   

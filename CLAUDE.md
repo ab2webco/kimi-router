@@ -25,9 +25,9 @@ Add these variables to your `~/.zshrc` (or `~/.bashrc`):
 
 ```bash
 # Kimi Router Smart Model Selection
-export ANTHROPIC_MODEL=moonshot/kimi-k2                    # Default for text-only (economic)
+export ANTHROPIC_MODEL=moonshotai/kimi-k2                    # Default for text-only (economic)
 export ANTHROPIC_VISION_MODEL=anthropic/claude-3.5-sonnet  # For images/vision tasks
-export ANTHROPIC_SMALL_FAST_MODEL=google/gemini-2.0-flash-exp  # For quick tasks
+export ANTHROPIC_SMALL_FAST_MODEL=google/gemini-2.5-flash-lite  # For quick tasks
 
 # Your OpenRouter API key
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

@@ -595,9 +595,9 @@ export function generateIndexHtml(baseUrl: string): string {
 <span class="keyword">export</span> <span class="function">ANTHROPIC_API_KEY</span>=<span class="string">"your-openrouter-api-key"</span>
 
 <span class="comment"># Smart Model Selection</span>
-<span class="keyword">export</span> <span class="function">ANTHROPIC_MODEL</span>=<span class="string">"moonshot/kimi-k2"</span>                    <span class="comment"># Economic for text</span>
+<span class="keyword">export</span> <span class="function">ANTHROPIC_MODEL</span>=<span class="string">"moonshotai/kimi-k2"</span>                    <span class="comment"># Economic for text</span>
 <span class="keyword">export</span> <span class="function">ANTHROPIC_VISION_MODEL</span>=<span class="string">"anthropic/claude-3.5-sonnet"</span>  <span class="comment"># Auto-used for images</span>
-<span class="keyword">export</span> <span class="function">ANTHROPIC_SMALL_FAST_MODEL</span>=<span class="string">"google/gemini-2.0-flash-exp"</span>  <span class="comment"># Fast tasks</span></code>
+<span class="keyword">export</span> <span class="function">ANTHROPIC_SMALL_FAST_MODEL</span>=<span class="string">"google/gemini-2.5-flash-lite"</span>  <span class="comment"># Fast tasks</span></code>
                         </div>
                         <p style="margin-top: 15px; font-size: 0.95em; color: var(--success); font-weight: 500;">✨ The router automatically switches to vision models when you upload images!</p>
                         
@@ -617,9 +617,9 @@ export function generateIndexHtml(baseUrl: string): string {
                             <code><span class="function">kimi</span><span class="keyword">()</span> <span class="keyword">{</span>
   <span class="keyword">export</span> <span class="function">ANTHROPIC_BASE_URL</span>=<span class="string">${baseUrl}</span>
   <span class="keyword">export</span> <span class="function">ANTHROPIC_API_KEY</span>=<span class="string">sk-or-v1-your-key-here</span>
-  <span class="keyword">export</span> <span class="function">ANTHROPIC_MODEL</span>=<span class="string">moonshot/kimi-k2</span>
+  <span class="keyword">export</span> <span class="function">ANTHROPIC_MODEL</span>=<span class="string">moonshotai/kimi-k2</span>
   <span class="keyword">export</span> <span class="function">ANTHROPIC_VISION_MODEL</span>=<span class="string">anthropic/claude-3.5-sonnet</span>
-  <span class="keyword">export</span> <span class="function">ANTHROPIC_SMALL_FAST_MODEL</span>=<span class="string">google/gemini-2.0-flash-exp</span>
+  <span class="keyword">export</span> <span class="function">ANTHROPIC_SMALL_FAST_MODEL</span>=<span class="string">google/gemini-2.5-flash-lite</span>
   <span class="function">claude</span> <span class="string">"$@"</span>
 <span class="keyword">}</span></code>
                         </div>
@@ -685,7 +685,7 @@ export function generateIndexHtml(baseUrl: string): string {
                     </div>
                     <code><span class="comment"># Text only → Uses ANTHROPIC_MODEL (cheap)</span>
 <span class="comment"># Images detected → Auto-switches to ANTHROPIC_VISION_MODEL</span>
-<span class="keyword">export</span> <span class="function">ANTHROPIC_MODEL</span>=<span class="string">"moonshot/kimi-k2"</span>
+<span class="keyword">export</span> <span class="function">ANTHROPIC_MODEL</span>=<span class="string">"moonshotai/kimi-k2"</span>
 <span class="keyword">export</span> <span class="function">ANTHROPIC_VISION_MODEL</span>=<span class="string">"anthropic/claude-3.5-sonnet"</span></code>
                 </div>
             </div>

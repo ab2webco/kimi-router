@@ -61,9 +61,9 @@ Add to your `~/.bashrc` or `~/.zshrc`:
 kimi() {
   export ANTHROPIC_BASE_URL=https://kimi.koombea.io
   export ANTHROPIC_API_KEY=sk-or-v1-your-key-here
-  export ANTHROPIC_MODEL=moonshot/kimi-k2
+  export ANTHROPIC_MODEL=moonshotai/kimi-k2
   export ANTHROPIC_VISION_MODEL=anthropic/claude-3.5-sonnet
-  export ANTHROPIC_SMALL_FAST_MODEL=google/gemini-2.0-flash-exp
+  export ANTHROPIC_SMALL_FAST_MODEL=google/gemini-2.5-flash-lite
   claude "$@"
 }
 ```
@@ -173,7 +173,7 @@ kimi-router/
 
 Kimi Router automatically switches between models based on content type:
 
-- **Text conversations** → Uses `ANTHROPIC_MODEL` (economic choice like `moonshot/kimi-k2`)
+- **Text conversations** → Uses `ANTHROPIC_MODEL` (economic choice like `moonshotai/kimi-k2`)
 - **Images detected** → Auto-switches to `ANTHROPIC_VISION_MODEL` (like `anthropic/claude-3.5-sonnet`)
 - **Fast tasks** → Uses `ANTHROPIC_SMALL_FAST_MODEL` for quick responses
 
@@ -181,17 +181,17 @@ Kimi Router automatically switches between models based on content type:
 
 Kimi Router comes pre-configured with optimized model defaults:
 
-- **Primary Model**: `moonshot/kimi-k2` - Excellent for complex reasoning at low cost
+- **Primary Model**: `moonshotai/kimi-k2` - Excellent for complex reasoning at low cost
 - **Vision Model**: `anthropic/claude-3.5-sonnet` - Automatically used when images are detected
-- **Fast Model**: `google/gemini-2.0-flash-exp` - Quick responses
+- **Fast Model**: `google/gemini-2.5-flash-lite` - Quick responses
 
 ### Custom Model Configuration
 
 ```bash
 # Set your preferred models with smart selection
-export ANTHROPIC_MODEL="moonshot/kimi-k2"                    # Economic for text
+export ANTHROPIC_MODEL="moonshotai/kimi-k2"                    # Economic for text
 export ANTHROPIC_VISION_MODEL="anthropic/claude-3.5-sonnet"  # Auto-used for images
-export ANTHROPIC_SMALL_FAST_MODEL="google/gemini-2.0-flash-exp"  # Fast tasks
+export ANTHROPIC_SMALL_FAST_MODEL="google/gemini-2.5-flash-lite"  # Fast tasks
 
 # Or use with the kimi function
 kimi() {
