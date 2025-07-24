@@ -179,10 +179,13 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
           },
         });
         
-        // Set headers
+        // Set headers to match Anthropic API exactly
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key');
+        res.setHeader('X-Request-ID', `req_${Date.now()}`);
         res.writeHead(200);
         
         // Stream the response
@@ -195,7 +198,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
                 const { done, value } = await reader.read();
                 if (done) break;
                 
-                if (!res.destroyed) {
+                if (!res.destroyed && !res.writableEnded) {
                   res.write(value);
                 }
               }
@@ -208,7 +211,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
                 console.error('Error releasing reader lock:', e);
               }
               
-              if (!res.destroyed) {
+              if (!res.destroyed && !res.writableEnded) {
                 res.end();
               }
               
@@ -227,7 +230,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
           
           pump().catch(error => {
             console.error('Pump error:', error);
-            if (!res.destroyed) {
+            if (!res.destroyed && !res.writableEnded) {
               res.end();
             }
           });
