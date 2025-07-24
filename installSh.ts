@@ -152,14 +152,14 @@ if [ -z "$api_key" ]; then
     exit 1
 fi
 
-read -p "Main model (text) [$default_model_main]: " model_main
+read -p "Main model [$default_model_main]: " model_main
 model_main=\${model_main:-$default_model_main}
-
-read -p "Vision model (images) [$default_model_vision]: " model_vision
-model_vision=\${model_vision:-$default_model_vision}
 
 read -p "Small/fast model [$default_model_small]: " model_small
 model_small=\${model_small:-$default_model_small}
+
+# Vision model is now hardcoded to anthropic/claude-3.5-sonnet
+model_vision="anthropic/claude-3.5-sonnet"
 
 # Detect current shell and determine rc file
 current_shell=$(basename "$SHELL")
