@@ -8,16 +8,26 @@ import { termsHtml } from './termsHtml';
 import { privacyHtml } from './privacyHtml';
 import { generateInstallSh } from './installSh';
 
-// Utility to read request body
+// Utility to read request body with proper encoding
 function readRequestBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
-    let body = '';
+    const chunks: Buffer[] = [];
+    let totalLength = 0;
+    
     req.on('data', chunk => {
-      body += chunk.toString();
+      chunks.push(chunk);
+      totalLength += chunk.length;
     });
+    
     req.on('end', () => {
-      resolve(body);
+      try {
+        const body = Buffer.concat(chunks, totalLength).toString('utf8');
+        resolve(body);
+      } catch (error) {
+        reject(error);
+      }
     });
+    
     req.on('error', reject);
   });
 }
@@ -100,7 +110,28 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     // Main API endpoint - EXACT replica of index.ts logic
     if (url.pathname === '/v1/messages' && req.method === 'POST') {
       const bodyText = await readRequestBody(req);
-      const anthropicRequest = JSON.parse(bodyText);
+      
+      // Debug JSON parsing issues
+      let anthropicRequest;
+      try {
+        anthropicRequest = JSON.parse(bodyText);
+      } catch (parseError) {
+        console.error('JSON Parse Error:', parseError.message);
+        console.error('Body length:', bodyText.length);
+        console.error('Body preview (first 200 chars):', bodyText.substring(0, 200));
+        console.error('Character at error position:', bodyText.charAt(128));
+        console.error('Characters around error (120-140):', bodyText.substring(120, 140));
+        
+        res.writeHead(400);
+        res.end(JSON.stringify({
+          error: {
+            type: 'invalid_request_error',
+            message: 'Invalid JSON in request body'
+          }
+        }));
+        return;
+      }
+      
       const openaiRequest = formatAnthropicToOpenAI(anthropicRequest);
       const bearerToken = req.headers['x-api-key'] as string;
       
