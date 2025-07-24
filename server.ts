@@ -111,10 +111,13 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     if (url.pathname === '/v1/messages' && req.method === 'POST') {
       const bodyText = await readRequestBody(req);
       
+      // Clean JSON by removing invalid escape sequences
+      const cleanedBodyText = bodyText.replace(/\\([^"\\\/bfnrtu])/g, '$1');
+      
       // Debug JSON parsing issues
       let anthropicRequest;
       try {
-        anthropicRequest = JSON.parse(bodyText);
+        anthropicRequest = JSON.parse(cleanedBodyText);
       } catch (parseError) {
         const error = parseError as Error;
         console.error('JSON Parse Error:', error.message);
