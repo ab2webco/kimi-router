@@ -64,6 +64,8 @@ export default {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${bearerToken}`,
+          "User-Agent": "Kimi-Router/1.0 (https://github.com/ab2webco/kimi-router)",
+          "X-Forwarded-For": request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "unknown",
         },
         body: JSON.stringify(openaiRequest),
       });

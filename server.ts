@@ -63,6 +63,8 @@ app.post('/v1/messages', async (req, res) => {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${bearerToken}`,
+        "User-Agent": "Kimi-Router/1.0 (https://github.com/ab2webco/kimi-router)",
+        "X-Forwarded-For": req.ip || req.connection.remoteAddress || 'unknown',
       },
       body: JSON.stringify(openaiRequest),
     });
@@ -76,11 +78,17 @@ app.post('/v1/messages', async (req, res) => {
       // Use EXACTLY the same logic as index.ts (Cloudflare Workers)
       const anthropicStream = streamOpenAIToAnthropic(openaiResponse.body as ReadableStream, openaiRequest.model);
       
+      // Set headers to match Anthropic API exactly
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Headers', 'Cache-Control');
+      res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
+      res.setHeader('Transfer-Encoding', 'chunked');
+      
+      // Ensure no timeout issues
+      res.setTimeout(0);
       
       // Convert ReadableStream to Node.js stream for Express
       const reader = anthropicStream.getReader();
