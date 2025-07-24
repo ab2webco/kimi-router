@@ -1,7 +1,5 @@
 export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: string): ReadableStream {
   const messageId = "msg_" + Date.now();
-  let repeatCount = 0;
-  let lastContent = '';
   
   const enqueueSSE = (controller: ReadableStreamDefaultController, eventType: string, data: any) => {
     const sseMessage = `event: ${eventType}\ndata: ${JSON.stringify(data)}\n\n`;
@@ -55,7 +53,7 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
                       processStreamDelta(delta);
                     }
                   } catch (e) {
-                    // Parse error - ignore malformed chunks
+                    // Parse error
                   }
                 }
               }
@@ -83,46 +81,16 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
                 const delta = parsed.choices?.[0]?.delta;
                 
                 if (!delta) continue;
-                
-                // Emergency brake for infinite loops
-                if (delta.content) {
-                  if (delta.content === lastContent) {
-                    repeatCount++;
-                    if (repeatCount > 5) {
-                      console.log('EMERGENCY: Breaking infinite loop, forcing stream end');
-                      // Force end the stream
-                      controller.close();
-                      return;
-                    }
-                  } else {
-                    repeatCount = 0;
-                    lastContent = delta.content;
-                  }
-                  
-                  // Also catch TodoWrite loops specifically
-                  if (delta.content.includes('TodoWrite')) {
-                    console.log('Detected TodoWrite in stream, skipping to prevent loop');
-                    continue;
-                  }
-                }
-                
                 processStreamDelta(delta);
               } catch (e) {
-                // Parse error - ignore malformed chunks
-                console.log('Parse error in stream:', e instanceof Error ? e.message : 'Unknown error');
+                // Parse error
                 continue;
               }
             }
           }
         }
-      } catch (streamError) {
-        console.error('Stream processing error:', streamError);
       } finally {
-        try {
-          reader.releaseLock();
-        } catch (e) {
-          // Reader might already be released
-        }
+        reader.releaseLock();
       }
 
       function processStreamDelta(delta: any) {
@@ -176,17 +144,6 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
             }
           }
         } else if (delta.content) {
-          // Filter out reserved tokens and other special tokens that can cause streaming issues
-          const cleanContent = delta.content
-            .replace(/<\|reserved_token_\d+\|>/g, '')
-            .replace(/<\|.*?\|>/g, '') // Filter any other special tokens
-            .replace(/\u0000/g, ''); // Filter null bytes
-          
-          // Skip if content is empty after filtering but continue processing
-          if (!cleanContent.trim()) {
-            return;
-          }
-          
           if (isToolUse) {
             enqueueSSE(controller, "content_block_stop", {
               type: "content_block_stop",
@@ -214,7 +171,7 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
             index: contentBlockIndex,
             delta: {
               type: "text_delta",
-              text: cleanContent,
+              text: delta.content,
             },
           });
         }

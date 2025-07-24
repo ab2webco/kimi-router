@@ -40,17 +40,7 @@ function getClientIP(req: IncomingMessage): string {
          'unknown';
 }
 
-// Request deduplication cache
-const activeRequests = new Map<string, Promise<any>>();
-
-function getRequestHash(body: any): string {
-  // Create hash from model + last message content to detect duplicates
-  const lastMessage = body.messages?.[body.messages.length - 1];
-  const content = typeof lastMessage?.content === 'string' 
-    ? lastMessage.content 
-    : JSON.stringify(lastMessage?.content || '');
-  return `${body.model || 'unknown'}:${content.slice(0, 100)}`;
-}
+// Simplified approach - no request deduplication
 
 const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
   try {
@@ -153,30 +143,11 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
         }
       }
       
-      // Detect and handle duplicate requests
-      const requestHash = getRequestHash(anthropicRequest);
-      const existingRequest = activeRequests.get(requestHash);
-      
-      if (existingRequest) {
-        console.log(`🔄 Duplicate request detected, waiting for existing: ${requestHash.slice(0, 20)}...`);
-        // Wait for the existing request but don't use its response directly
-        // This prevents race conditions but still allows independent processing
-        try {
-          await existingRequest;
-        } catch (e) {
-          // Ignore errors from the existing request
-        }
-        // Small delay to prevent immediate duplicate processing
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-
       const openaiRequest = formatAnthropicToOpenAI(anthropicRequest, process.env);
       const bearerToken = req.headers['x-api-key'] as string;
       
       const baseUrl = process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
-      
-      // Register this request
-      const requestPromise = fetch(`${baseUrl}/chat/completions`, {
+      const openaiResponse = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -189,78 +160,37 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
         body: JSON.stringify(openaiRequest),
       });
       
-      activeRequests.set(requestHash, requestPromise);
-      const openaiResponse = await requestPromise;
-      
       if (!openaiResponse.ok) {
         const errorText = await openaiResponse.text();
-        activeRequests.delete(requestHash); // Clean up on error
         res.writeHead(openaiResponse.status);
         res.end(errorText);
         return;
       }
       
       if (openaiRequest.stream) {
-        const requestId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        console.log(`🌊 Starting stream ${requestId} for model: ${openaiRequest.model}`);
-        
-        // EXACT same logic as index.ts - create Web Response then stream
         const anthropicStream = streamOpenAIToAnthropic(openaiResponse.body as ReadableStream, openaiRequest.model);
-        const webResponse = new Response(anthropicStream, {
-          headers: {
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-          },
-        });
         
-        // Set headers
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
         res.writeHead(200);
         
-        // Stream the response
-        if (webResponse.body) {
-          const reader = webResponse.body.getReader();
-          
-          const pump = async () => {
-            try {
-              while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                
-                res.write(value);
-              }
-            } catch (error) {
-              console.error('Streaming error:', error);
-            } finally {
-              reader.releaseLock();
-              res.end();
-              activeRequests.delete(requestHash); // Clean up after streaming
-              console.log(`🏁 Stream ${requestId} completed`);
-            }
-          };
-          
-          // Handle client disconnect
-          req.on('close', () => {
-            try {
-              reader.releaseLock();
-            } catch (e) {
-              // Already released
-            }
-          });
-          
-          pump();
-        } else {
+        const reader = anthropicStream.getReader();
+        
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            res.write(value);
+          }
+        } finally {
+          reader.releaseLock();
           res.end();
         }
       } else {
-        // Non-streaming response
         const openaiData = await openaiResponse.json();
         const anthropicResponse = formatOpenAIToAnthropic(openaiData, openaiRequest.model);
         
-        activeRequests.delete(requestHash); // Clean up after non-streaming
         res.setHeader('Content-Type', 'application/json');
         res.writeHead(200);
         res.end(JSON.stringify(anthropicResponse));
@@ -274,17 +204,6 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     
   } catch (error) {
     console.error('Server error:', error);
-    // Clean up any active requests on server error
-    if (req.url === '/v1/messages' && req.method === 'POST') {
-      // We can't easily get the request hash here, so we'll clear old entries
-      const now = Date.now();
-      for (const [hash, promise] of activeRequests.entries()) {
-        // Clear requests older than 30 seconds
-        if (now - parseInt(hash.split(':')[0] || '0') > 30000) {
-          activeRequests.delete(hash);
-        }
-      }
-    }
     res.writeHead(500);
     res.end(JSON.stringify({ 
       error: { 
