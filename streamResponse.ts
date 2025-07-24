@@ -214,15 +214,7 @@ export function streamOpenAIToAnthropic(openaiStream: ReadableStream, model: str
         type: "message_stop",
       });
 
-      // Send final empty line to ensure proper SSE termination
-      controller.enqueue(new TextEncoder().encode('\n'));
-
-      // Close the controller properly
-      try {
-        controller.close();
-      } catch (e) {
-        // Controller might already be closed
-      }
+      controller.close();
     },
   });
 }

@@ -153,20 +153,18 @@ export function formatAnthropicToOpenAI(body: MessageCreateParamsBase, env?: any
   // Auto-select the best model based on content
   const selectedModel = autoSelectModel(model, messages, env);
   
-  // Log model selection for debugging (non-blocking)
+  // Log model selection for debugging
   const hasImages = hasImageContent(messages);
-  process.nextTick(() => {
-    console.log(`📊 Model Selection:
+  console.log(`📊 Model Selection:
     - Last message has images: ${hasImages ? '🖼️  YES' : '📝 NO'}
     - Original model: ${model}
     - Selected model: ${selectedModel}
     - Action: ${selectedModel !== model ? '🔄 SWITCHED' : '✅ KEPT'}
   `);
-    
-    if (selectedModel !== model) {
-      console.log(`🔄 Auto-switched model: ${model} → ${selectedModel} (${hasImages ? 'images detected' : 'text only'})`);
-    }
-  });
+  
+  if (selectedModel !== model) {
+    console.log(`🔄 Auto-switched model: ${model} → ${selectedModel} (${hasImages ? 'images detected' : 'text only'})`);
+  }
 
   const openAIMessages = Array.isArray(messages)
     ? messages.flatMap((anthropicMessage) => {

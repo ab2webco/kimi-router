@@ -179,13 +179,10 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
           },
         });
         
-        // Set headers to match Anthropic API exactly
+        // Set headers
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key');
-        res.setHeader('X-Request-ID', `req_${Date.now()}`);
         res.writeHead(200);
         
         // Stream the response
@@ -198,23 +195,13 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
                 const { done, value } = await reader.read();
                 if (done) break;
                 
-                if (!res.destroyed && !res.writableEnded) {
-                  res.write(value);
-                }
+                res.write(value);
               }
             } catch (error) {
               console.error('Streaming error:', error);
             } finally {
-              try {
-                reader.releaseLock();
-              } catch (e) {
-                console.error('Error releasing reader lock:', e);
-              }
-              
-              if (!res.destroyed && !res.writableEnded) {
-                res.end();
-              }
-              
+              reader.releaseLock();
+              res.end();
               console.log(`🏁 Stream ${requestId} completed`);
             }
           };
@@ -228,12 +215,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
             }
           });
           
-          pump().catch(error => {
-            console.error('Pump error:', error);
-            if (!res.destroyed && !res.writableEnded) {
-              res.end();
-            }
-          });
+          pump();
         } else {
           res.end();
         }
