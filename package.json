@@ -9,16 +9,14 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "build-node": "tsc",
-    "start-ts": "ts-node server.ts"
+    "start-ts": "ts-node server.ts",
+    "start-native": "ts-node server-native.ts"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "dependencies": {
-    "express": "^4.18.2"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/express": "^4.17.17",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.0"
   }
