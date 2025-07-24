@@ -77,59 +77,57 @@ app.post('/v1/messages', async (req, res) => {
     }
 
     if (openaiRequest.stream) {
-      // Use EXACTLY the same logic as index.ts (Cloudflare Workers)
+      // EXACTLY replicate Cloudflare Workers approach - SIMPLE!
       const anthropicStream = streamOpenAIToAnthropic(openaiResponse.body as ReadableStream, openaiRequest.model);
       
-      // Set headers to match Anthropic API exactly
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Headers', 'Cache-Control');
-      res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
-      res.setHeader('Transfer-Encoding', 'chunked');
       
-      // Ensure no timeout issues
-      res.setTimeout(0);
+      // Pipe the stream directly - simple like original
+      const nodeStream = new ReadableStream({
+        start(controller) {
+          const reader = anthropicStream.getReader();
+          function pump(): any {
+            return reader.read().then(({ done, value }) => {
+              if (done) {
+                controller.close();
+                return;
+              }
+              controller.enqueue(value);
+              return pump();
+            });
+          }
+          return pump();
+        }
+      });
       
-      // Convert ReadableStream to Node.js stream for Express
-      const reader = anthropicStream.getReader();
+      const response = new Response(nodeStream, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        }
+      });
       
-      const pump = async () => {
+      // Convert Web Streams API response to Node.js response
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      
+      const processStream = async () => {
         try {
           while (true) {
             const { done, value } = await reader.read();
-            if (done) {
-              res.end();
-              break;
-            }
-            
-            // Ensure proper encoding for the chunk
-            const chunk = typeof value === 'string' ? value : new TextDecoder().decode(value);
-            
-            if (!res.write(chunk, 'utf8')) {
-              // Handle backpressure
-              await new Promise(resolve => res.once('drain', resolve));
-            }
-          }
-        } catch (error) {
-          console.error('Streaming error:', error);
-          if (!res.headersSent) {
-            res.status(500).json({ error: 'Streaming failed' });
-          } else {
-            res.end();
+            if (done) break;
+            res.write(decoder.decode(value, { stream: true }));
           }
         } finally {
+          res.end();
           reader.releaseLock();
         }
       };
       
-      // Handle client disconnect
-      res.on('close', () => {
-        reader.releaseLock();
-      });
-      
-      pump();
+      processStream();
     } else {
       const openaiData = await openaiResponse.json();
       const anthropicResponse = formatOpenAIToAnthropic(openaiData, openaiRequest.model);
