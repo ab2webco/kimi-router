@@ -111,29 +111,34 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     if (url.pathname === '/v1/messages' && req.method === 'POST') {
       const bodyText = await readRequestBody(req);
       
-      // Clean JSON by removing invalid escape sequences
-      const cleanedBodyText = bodyText.replace(/\\([^"\\\/bfnrtu])/g, '$1');
-      
-      // Debug JSON parsing issues
+      // Replicate Cloudflare Workers request.json() behavior
+      // Use the same permissive parsing that Cloudflare Workers uses
       let anthropicRequest;
       try {
-        anthropicRequest = JSON.parse(cleanedBodyText);
-      } catch (parseError) {
-        const error = parseError as Error;
-        console.error('JSON Parse Error:', error.message);
-        console.error('Body length:', bodyText.length);
-        console.error('Body preview (first 200 chars):', bodyText.substring(0, 200));
-        console.error('Character at error position:', bodyText.charAt(128));
-        console.error('Characters around error (120-140):', bodyText.substring(120, 140));
-        
-        res.writeHead(400);
-        res.end(JSON.stringify({
-          error: {
-            type: 'invalid_request_error',
-            message: 'Invalid JSON in request body'
-          }
-        }));
-        return;
+        // Try standard JSON.parse first
+        anthropicRequest = JSON.parse(bodyText);
+      } catch (strictParseError) {
+        try {
+          // Fallback: Clean JSON like Cloudflare Workers does internally  
+          const cleanedBodyText = bodyText.replace(/\\([^"\\\/bfnrtu])/g, '$1');
+          anthropicRequest = JSON.parse(cleanedBodyText);
+        } catch (parseError) {
+          const error = parseError as Error;
+          console.error('JSON Parse Error (after cleaning):', error.message);
+          console.error('Body length:', bodyText.length);
+          console.error('Body preview (first 200 chars):', bodyText.substring(0, 200));
+          console.error('Character at error position:', bodyText.charAt(128));
+          console.error('Characters around error (120-140):', bodyText.substring(120, 140));
+          
+          res.writeHead(400);
+          res.end(JSON.stringify({
+            error: {
+              type: 'invalid_request_error',
+              message: 'Invalid JSON in request body'
+            }
+          }));
+          return;
+        }
       }
       
       const openaiRequest = formatAnthropicToOpenAI(anthropicRequest);
