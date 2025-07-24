@@ -22,8 +22,8 @@ The router automatically selects the best model based on content type and enviro
 ### How it works
 
 The router automatically:
-- **Uses `moonshotai/kimi-k2`** for text conversations (economic, fast)
-- **Switches to `anthropic/claude-3.5-sonnet`** when images are detected
+- **For text**: Uses whatever model you configure in Claude Code
+- **For images**: Always switches to `anthropic/claude-3.5-sonnet` (or your custom vision model)
 - **No configuration needed** - works out of the box!
 
 ### Optional: Custom Vision Model

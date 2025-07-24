@@ -660,8 +660,8 @@ export function generateIndexHtml(baseUrl: string): string {
 
         <div class="features">
             <div class="feature-card">
-                <h3>🧠 Smart Model Selection</h3>
-                <p>Automatically switches between models based on content. Uses Kimi K2 for text (cheap!) and Claude 3.5 Sonnet for images - saving you money!</p>
+                <h3>🧠 Smart Vision Detection</h3>
+                <p>Automatically switches to Claude 3.5 Sonnet when you add images. Keep using your preferred model for text!</p>
                 <div class="code-block">
                     <div class="code-header">
                         <div class="code-dots">
@@ -674,11 +674,11 @@ export function generateIndexHtml(baseUrl: string): string {
                             Copy
                         </button>
                     </div>
-                    <code><span class="comment"># Automatic selection (built-in defaults)</span>
-<span class="comment"># Text only → moonshotai/kimi-k2</span>
+                    <code><span class="comment"># Automatic behavior:</span>
+<span class="comment"># Text only → Uses your configured model</span>
 <span class="comment"># Images detected → anthropic/claude-3.5-sonnet</span>
 
-<span class="comment"># Optional: Override vision model</span>
+<span class="comment"># Optional: Use a different vision model</span>
 <span class="keyword">export</span> <span class="function">ANTHROPIC_VISION_MODEL</span>=<span class="string">"openai/gpt-4-vision-preview"</span></code>
                 </div>
             </div>

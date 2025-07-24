@@ -166,13 +166,13 @@ kimi-router/
 
 ## 🤖 Smart Model Configuration
 
-### 🧠 Automatic Model Selection
+### 🧠 Automatic Vision Model Selection
 
-Kimi Router automatically switches between models based on content type:
+Kimi Router automatically handles images:
 
-- **Text conversations** → Uses `moonshotai/kimi-k2` (fast & economic)
-- **Images detected** → Auto-switches to `anthropic/claude-3.5-sonnet` (vision capable)
-- **No configuration needed** → Works out of the box!
+- **Text conversations** → Uses your configured model (e.g., `moonshotai/kimi-k2`)
+- **Images detected** → Auto-switches to `anthropic/claude-3.5-sonnet` 
+- **No configuration needed** → Just add images and it works!
 
 ### Default Models
 

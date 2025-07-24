@@ -124,19 +124,16 @@ function hasImageContent(messages: any[]): boolean {
 
 // Function to auto-select model based on content and environment variables
 function autoSelectModel(originalModel: string, messages: any[], env?: any): string {
-  // Get models from environment variables (for Node.js server)
-  // Default to kimi-k2 for text (economic) unless overridden
-  const defaultModel = 'moonshotai/kimi-k2';
   // Allow override of vision model via env var, default to claude-3.5-sonnet
   const visionModel = process.env.ANTHROPIC_VISION_MODEL || env?.ANTHROPIC_VISION_MODEL || 'anthropic/claude-3.5-sonnet';
   
-  // ALWAYS auto-switch based on content, ignore what Claude Code sends
+  // Only override model when images are detected
   if (hasImageContent(messages)) {
-    // Use vision-capable model for images
+    // ALWAYS use vision-capable model for images
     return visionModel;
   } else {
-    // Use default economic model for text-only
-    return defaultModel;
+    // For text-only, respect whatever model Claude Code sends
+    return originalModel;
   }
 }
 
