@@ -37,7 +37,7 @@ export default {
     }
     
     if (url.pathname === '/v1/messages' && request.method === 'POST') {
-      const anthropicRequest = await request.json();
+      const anthropicRequest = await request.json() as any;
       const openaiRequest = formatAnthropicToOpenAI(anthropicRequest);
       const bearerToken = request.headers.get("x-api-key");
 

@@ -1,10 +1,10 @@
 import { faviconDataUrl } from './faviconServer';
 
 export function generateIndexHtml(baseUrl: string): string {
-  // Extraer el dominio limpio (sin https://)
-  const cleanUrl = baseUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
-  
-  return `<!DOCTYPE html>
+    // Extraer el dominio limpio (sin https://)
+    const cleanUrl = baseUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -529,7 +529,7 @@ export function generateIndexHtml(baseUrl: string): string {
                         <div class="code-dot"></div>
                         <div class="code-dot"></div>
                     </div>
-                    <button class="copy-button" onclick="copyToClipboard(this, 'bash -c \\"$(curl -fsSL ${baseUrl}/install.sh)\\"')">
+                    <button class="copy-button" onclick="copyToClipboard(this)">
                         <svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
                         Copy
                     </button>
@@ -555,7 +555,7 @@ export function generateIndexHtml(baseUrl: string): string {
                                     <div class="code-dot"></div>
                                     <div class="code-dot"></div>
                                 </div>
-                                <button class="copy-button" onclick="copyToClipboard(this, 'npm install -g @anthropic-ai/claude-code')">
+                                <button class="copy-button" onclick="copyToClipboard(this)">
                                     <svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
                                     Copy
                                 </button>
@@ -585,7 +585,7 @@ export function generateIndexHtml(baseUrl: string): string {
                                     <div class="code-dot"></div>
                                     <div class="code-dot"></div>
                                 </div>
-                                <button class="copy-button" onclick="copyToClipboard(this, 'export ANTHROPIC_BASE_URL=\\"${baseUrl}\\"\\nexport ANTHROPIC_API_KEY=\\"your-openrouter-api-key\\"')">
+                                <button class="copy-button" onclick="copyToClipboard(this)">
                                     <svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
                                     Copy
                                 </button>
@@ -602,7 +602,7 @@ export function generateIndexHtml(baseUrl: string): string {
                                     <div class="code-dot"></div>
                                     <div class="code-dot"></div>
                                 </div>
-                                <button class="copy-button" onclick="copyToClipboard(this, 'kimi() {\\n  export ANTHROPIC_BASE_URL=${baseUrl}\\n  export ANTHROPIC_API_KEY=sk-or-v1-cd60....\\n  export ANTHROPIC_MODEL=moonshotai/kimi-k2\\n  export ANTHROPIC_SMALL_FAST_MODEL=google/gemini-2.5-flash-lite\\n  claude \\"$@\\"\\n}')">
+                                <button class="copy-button" onclick="copyToClipboard(this)">
                                     <svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
                                     Copy
                                 </button>
@@ -630,7 +630,7 @@ export function generateIndexHtml(baseUrl: string): string {
                                     <div class="code-dot"></div>
                                     <div class="code-dot"></div>
                                 </div>
-                                <button class="copy-button" onclick="copyToClipboard(this, 'claude')">
+                                <button class="copy-button" onclick="copyToClipboard(this)">
                                     <svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
                                     Copy
                                 </button>
@@ -646,7 +646,7 @@ export function generateIndexHtml(baseUrl: string): string {
                                     <div class="code-dot"></div>
                                     <div class="code-dot"></div>
                                 </div>
-                                <button class="copy-button" onclick="copyToClipboard(this, 'kimi')">
+                                <button class="copy-button" onclick="copyToClipboard(this)">
                                     <svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
                                     Copy
                                 </button>
@@ -670,7 +670,7 @@ export function generateIndexHtml(baseUrl: string): string {
                             <div class="code-dot"></div>
                             <div class="code-dot"></div>
                         </div>
-                        <button class="copy-button" onclick="copyToClipboard(this, 'export ANTHROPIC_MODEL=\\"moonshotai/kimi-k2\\"\\nexport ANTHROPIC_SMALL_FAST_MODEL=\\"google/gemini-2.5-flash-lite\\"')">
+                        <button class="copy-button" onclick="copyToClipboard(this)">
                             <svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
                             Copy
                         </button>
@@ -690,7 +690,7 @@ export function generateIndexHtml(baseUrl: string): string {
                             <div class="code-dot"></div>
                             <div class="code-dot"></div>
                         </div>
-                        <button class="copy-button" onclick="copyToClipboard(this, 'alias c1=\\'ANTHROPIC_MODEL=\\"moonshotai/kimi-k2\\" claude\\'\\nalias c2=\\'ANTHROPIC_MODEL=\\"google/gemini-2.5-flash-lite\\" claude\\'')">
+                        <button class="copy-button" onclick="copyToClipboard(this)">
                             <svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
                             Copy
                         </button>
@@ -710,7 +710,7 @@ export function generateIndexHtml(baseUrl: string): string {
                             <div class="code-dot"></div>
                             <div class="code-dot"></div>
                         </div>
-                        <button class="copy-button" onclick="copyToClipboard(this, 'POST ${baseUrl}/v1/messages')">
+                        <button class="copy-button" onclick="copyToClipboard(this)">
                             <svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
                             Copy
                         </button>
@@ -733,18 +733,48 @@ export function generateIndexHtml(baseUrl: string): string {
             <a href="https://github.com/ab2webco/kimi-router" target="_blank">GitHub Repository</a>
             <a href="https://openrouter.ai" target="_blank">OpenRouter</a>
         </div>
-        <p class="footer-copyright">© 2024 Kimi Router. Not affiliated with Anthropic or OpenRouter.</p>
+        <p class="footer-copyright">© 2025 Kimi Router. Not affiliated with Anthropic or OpenRouter.</p>
     </div>
     
     <script>
-        function copyToClipboard(button, text) {
+        // Copy functionality will extract text dynamically from code blocks
+        
+        function copyToClipboard(button, fallbackText) {
+            // Get the text to copy - either from the fallback parameter or from the associated code block
+            let textToCopy;
+            
+            if (fallbackText) {
+                textToCopy = fallbackText;
+            } else {
+                // Get the code block and extract text
+                const codeBlock = button.closest('.code-block');
+                const codeElement = codeBlock ? codeBlock.querySelector('code') : null;
+                if (codeElement) {
+                    textToCopy = codeElement.textContent || codeElement.innerText;
+                } else {
+                    console.error('Could not find text to copy');
+                    return;
+                }
+            }
+            
+            // Clean the text - remove extra whitespace and normalize line breaks
+            const cleanText = textToCopy
+                .replace(/\\\\n/g, '\\n')  // Convert double escaped newlines to single escaped
+                .replace(/\\\\'/g, "'")    // Convert escaped quotes
+                .replace(/\\\\"/g, '"')    // Convert escaped double quotes
+                .trim();
+            
+            // Visual feedback
+            const originalHtml = button.innerHTML;
+            const checkIcon = '<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
+            
             // Fallback function for older browsers
             function fallbackCopyTextToClipboard(text) {
                 const textArea = document.createElement("textarea");
                 textArea.value = text;
-                textArea.style.top = "0";
-                textArea.style.left = "0";
-                textArea.style.position = "fixed";
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
                 document.body.appendChild(textArea);
                 textArea.focus();
                 textArea.select();
@@ -759,43 +789,34 @@ export function generateIndexHtml(baseUrl: string): string {
                 }
             }
             
-            const originalHtml = button.innerHTML;
-            const copyIcon = '<svg fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>';
-            const checkIcon = '<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
-            
-            // Clean text by removing line breaks and extra spaces from JavaScript strings
-            const cleanText = text.replace(/\\\\n/g, '\\n').replace(/\\\\"/g, '"').replace(/\\\\'/g, "'");
-            
-            if (!navigator.clipboard) {
-                // Fallback for older browsers
-                const success = fallbackCopyTextToClipboard(cleanText);
-                if (success) {
+            // Try modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(cleanText).then(() => {
                     button.innerHTML = checkIcon + ' Copied!';
                     button.classList.add('copied');
+                    
                     setTimeout(() => {
                         button.innerHTML = originalHtml;
                         button.classList.remove('copied');
                     }, 2000);
-                } else {
-                    button.innerHTML = '❌ Failed';
+                }).catch(err => {
+                    console.error('Clipboard API failed:', err);
+                    // Fallback to execCommand
+                    const success = fallbackCopyTextToClipboard(cleanText);
+                    if (success) {
+                        button.innerHTML = checkIcon + ' Copied!';
+                        button.classList.add('copied');
+                    } else {
+                        button.innerHTML = '❌ Failed';
+                    }
+                    
                     setTimeout(() => {
                         button.innerHTML = originalHtml;
+                        button.classList.remove('copied');
                     }, 2000);
-                }
-                return;
-            }
-            
-            navigator.clipboard.writeText(cleanText).then(() => {
-                button.innerHTML = checkIcon + ' Copied!';
-                button.classList.add('copied');
-                
-                setTimeout(() => {
-                    button.innerHTML = originalHtml;
-                    button.classList.remove('copied');
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy:', err);
-                // Try fallback method
+                });
+            } else {
+                // Use fallback method
                 const success = fallbackCopyTextToClipboard(cleanText);
                 if (success) {
                     button.innerHTML = checkIcon + ' Copied!';
@@ -808,7 +829,7 @@ export function generateIndexHtml(baseUrl: string): string {
                     button.innerHTML = originalHtml;
                     button.classList.remove('copied');
                 }, 2000);
-            });
+            }
         }
     </script>
 </body>

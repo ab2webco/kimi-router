@@ -94,6 +94,7 @@ export const indexHtml = `<!DOCTYPE html>
             overflow-x: auto;
             font-size: 0.9em;
             position: relative;
+            white-space: pre;
         }
 
         .code-block-wrapper {
@@ -179,7 +180,7 @@ export const indexHtml = `<!DOCTYPE html>
                 <h2><span class="step-number">⚡</span>One-line Install (Recommended)</h2>
                 <div class="code-block-wrapper">
                     <div class="code-block">bash -c "$(curl -fsSL https://kimi-router.your-domain.com/install.sh)"</div>
-                    <button class="copy-button" onclick="copyToClipboard(this, 'bash -c &quot;$(curl -fsSL https://kimi-router.your-domain.com/install.sh)&quot;')">Copy</button>
+                    <button class="copy-button" onclick="copyToClipboard(this)">Copy</button>
                 </div>
                 <div class="note">This script will automatically install Node.js, Claude Code, and configure your environment with OpenRouter or Moonshot</div>
             </div>
@@ -188,14 +189,14 @@ export const indexHtml = `<!DOCTYPE html>
                 <h2><span class="step-number">1</span>Manual: Install Claude Code</h2>
                 <div class="code-block-wrapper">
                     <div class="code-block">npm install -g @anthropic-ai/claude-code</div>
-                    <button class="copy-button" onclick="copyToClipboard(this, 'npm install -g @anthropic-ai/claude-code')">Copy</button>
+                    <button class="copy-button" onclick="copyToClipboard(this)">Copy</button>
                 </div>
                 <div class="note">Or download from <a href="https://claude.ai/code" target="_blank">claude.ai/code</a></div>
             </div>
 
             <div class="step">
                 <h2><span class="step-number">2</span>Manual: Get OpenRouter API Key</h2>
-                <p>Sign up at <a href="https://openrouter.ai" target="_blank">openrouter.ai</a> and get your API key</p>
+                <p>Sign up at <a href="https://openrouter.ai" target="_blank">openrouter.ai</a> and get your API key from <a href="https://openrouter.ai/settings/keys" target="_blank">settings/keys</a></p>
             </div>
 
             <div class="step">
@@ -204,18 +205,18 @@ export const indexHtml = `<!DOCTYPE html>
                 <div class="code-block-wrapper">
                     <div class="code-block">export ANTHROPIC_BASE_URL="https://kimi-router.your-domain.com"<br>
 export ANTHROPIC_API_KEY="your-openrouter-api-key"</div>
-                    <button class="copy-button" onclick="copyToClipboard(this, 'export ANTHROPIC_BASE_URL=&quot;https://kimi-router.your-domain.com&quot;\\nexport ANTHROPIC_API_KEY=&quot;your-openrouter-api-key&quot;')">Copy</button>
+                    <button class="copy-button" onclick="copyToClipboard(this)">Copy</button>
                 </div>
                 <p><strong>Optional:</strong> Configure specific models (browse at <a href="https://openrouter.ai/models" target="_blank">openrouter.ai/models</a>):</p>
                 <div class="code-block-wrapper">
                     <div class="code-block">export ANTHROPIC_MODEL="moonshotai/kimi-k2"<br>
 export ANTHROPIC_SMALL_FAST_MODEL="google/gemini-2.5-flash"</div>
-                    <button class="copy-button" onclick="copyToClipboard(this, 'export ANTHROPIC_MODEL=&quot;moonshotai/kimi-k2&quot;\\nexport ANTHROPIC_SMALL_FAST_MODEL=&quot;google/gemini-2.5-flash&quot;')">Copy</button>
+                    <button class="copy-button" onclick="copyToClipboard(this)">Copy</button>
                 </div>
                 <p>Then reload your shell:</p>
                 <div class="code-block-wrapper">
                     <div class="code-block">source ~/.bashrc</div>
-                    <button class="copy-button" onclick="copyToClipboard(this, 'source ~/.bashrc')">Copy</button>
+                    <button class="copy-button" onclick="copyToClipboard(this)">Copy</button>
                 </div>
             </div>
 
@@ -225,15 +226,15 @@ export ANTHROPIC_SMALL_FAST_MODEL="google/gemini-2.5-flash"</div>
             </div>
 
             <div class="note">
-                <p><strong>For data privacy:</strong> Consider <a href="https://github.com/luohy15/y-router?tab=readme-ov-file#setup" target="_blank">self-deploying y-router</a> to Cloudflare Workers instead of using this shared instance.</p>
+                <p><strong>For data privacy:</strong> Consider <a href="https://github.com/ab2webco/kimi-router?tab=readme-ov-file#setup" target="_blank">self-deploying kimi-router</a> to Cloudflare Workers instead of using this shared instance.</p>
             </div>
         </div>
 
         <div class="footer-links">
-            <a href="https://github.com/luohy15/y-router" target="_blank">y-router</a>
+            <a href="https://github.com/ab2webco/kimi-router" target="_blank">kimi-router</a>
             <a href="https://openrouter.ai" target="_blank">OpenRouter</a>
             <a href="https://claude.ai/code" target="_blank">Claude Code</a>
-            <a href="https://yovy.app" target="_blank">Yovy Chat</a>
+            <a href="https://kimi.moonshot.cn" target="_blank">Kimi Chat</a>
             <br>
             <a href="/terms">Terms</a>
             <a href="/privacy">Privacy</a>
@@ -241,8 +242,14 @@ export ANTHROPIC_SMALL_FAST_MODEL="google/gemini-2.5-flash"</div>
     </div>
 
     <script>
-        function copyToClipboard(button, text) {
-            navigator.clipboard.writeText(text).then(function() {
+        function copyToClipboard(button) {
+            const codeBlock = button.previousElementSibling;
+            const text = codeBlock.textContent || codeBlock.innerText;
+            
+            // Clean up the text - remove any HTML entities and normalize line breaks
+            const cleanText = text.replace(/<br>/g, '\n').trim();
+            
+            navigator.clipboard.writeText(cleanText).then(function() {
                 button.textContent = 'Copied!';
                 button.classList.add('copied');
                 setTimeout(function() {
@@ -253,7 +260,9 @@ export ANTHROPIC_SMALL_FAST_MODEL="google/gemini-2.5-flash"</div>
                 console.error('Failed to copy: ', err);
                 // Fallback for older browsers
                 const textArea = document.createElement('textarea');
-                textArea.value = text;
+                textArea.value = cleanText;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
                 document.body.appendChild(textArea);
                 textArea.focus();
                 textArea.select();
